@@ -1,4 +1,3 @@
-js id="j4n8t2"
 const express = require("express");
 
 const app = express();
