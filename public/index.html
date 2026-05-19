@@ -1,0 +1,436 @@
+  <!DOCTYPE html>
+  <html lang="es">
+  <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Burger King — Asistente</title>
+
+  <style>
+  *{box-sizing:border-box;margin:0;padding:0}
+
+  body{
+    font-family:'Segoe UI',Arial,sans-serif;
+    background:#f2f2f2;
+    display:flex;
+    justify-content:center;
+    padding:2rem 1rem;
+    min-height:100vh;
+  }
+
+  #bk-app{
+    width:100%;
+    max-width:460px;
+    border-radius:18px;
+    overflow:hidden;
+    border:1px solid #ddd;
+    background:#fff;
+    box-shadow:0 4px 18px rgba(0,0,0,.1);
+  }
+
+  #bk-header{
+    background:#D62300;
+    padding:14px 18px;
+    display:flex;
+    align-items:center;
+    gap:11px;
+  }
+
+  .bk-logo{
+    width:38px;
+    height:38px;
+    background:#F5A623;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:13px;
+    font-weight:700;
+    color:#D62300;
+    flex-shrink:0;
+  }
+
+  #bk-header .hinfo{
+    display:flex;
+    flex-direction:column;
+  }
+
+  #bk-header .hinfo span{
+    color:#fff;
+    font-size:15px;
+    font-weight:600;
+  }
+
+  #bk-header .hinfo small{
+    color:rgba(255,255,255,.65);
+    font-size:11px;
+  }
+
+  #bk-messages{
+    background:#f7f7f7;
+    padding:14px;
+    min-height:340px;
+    max-height:420px;
+    overflow-y:auto;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+
+  .msg{
+    display:flex;
+    gap:8px;
+    align-items:flex-end;
+  }
+
+  .msg.user{
+    flex-direction:row-reverse;
+  }
+
+  .av{
+    width:28px;
+    height:28px;
+    border-radius:50%;
+    background:#F5A623;
+    flex-shrink:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:11px;
+    font-weight:700;
+    color:#D62300;
+  }
+
+  .bubble{
+    max-width:80%;
+    padding:10px 14px;
+    font-size:13.5px;
+    line-height:1.6;
+    border-radius:16px;
+  }
+
+  .bot .bubble{
+    background:#fff;
+    border:1px solid #e5e5e5;
+    color:#1a1a1a;
+    border-bottom-left-radius:4px;
+  }
+
+  .user .bubble{
+    background:#D62300;
+    color:#fff;
+    border-bottom-right-radius:4px;
+  }
+
+  .typing span{
+    display:inline-block;
+    width:7px;
+    height:7px;
+    background:#bbb;
+    border-radius:50%;
+    margin:0 1px;
+    animation:bounce 1s infinite;
+  }
+
+  .typing span:nth-child(2){
+    animation-delay:.15s;
+  }
+
+  .typing span:nth-child(3){
+    animation-delay:.3s;
+  }
+
+  @keyframes bounce{
+    0%,60%,100%{transform:translateY(0)}
+    30%{transform:translateY(-6px)}
+  }
+
+  #bk-chips{
+    background:#fff;
+    border-top:1px solid #efefef;
+    padding:12px 14px;
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+  }
+
+  .chip{
+    font-size:13px;
+    padding:7px 14px;
+    border-radius:20px;
+    border:1.5px solid #D62300;
+    background:transparent;
+    color:#D62300;
+    cursor:pointer;
+    font-family:inherit;
+    font-weight:500;
+    transition:background .12s,color .12s;
+  }
+
+  .chip:hover{
+    background:#D62300;
+    color:#fff;
+  }
+
+  .chip:disabled{
+    opacity:.3;
+    cursor:not-allowed;
+  }
+
+  #bk-input-area{
+    display:flex;
+    gap:10px;
+    padding:14px;
+    border-top:1px solid #efefef;
+    background:#fff;
+  }
+
+  #bk-input{
+    flex:1;
+    resize:none;
+    border:1px solid #ddd;
+    border-radius:12px;
+    padding:10px 12px;
+    font-size:13px;
+    font-family:inherit;
+    outline:none;
+    min-height:44px;
+  }
+
+  #bk-input:focus{
+    border-color:#D62300;
+  }
+
+  #bk-send{
+    background:#D62300;
+    color:#fff;
+    border:none;
+    border-radius:12px;
+    padding:0 16px;
+    cursor:pointer;
+    font-weight:600;
+    transition:opacity .15s;
+  }
+
+  #bk-send:hover{
+    opacity:.9;
+  }
+
+  #bk-footer{
+    background:#fff;
+    border-top:1px solid #efefef;
+    padding:8px 14px;
+    text-align:center;
+    font-size:11px;
+    color:#bbb;
+  }
+  </style>
+  </head>
+
+  <body>
+
+  <div id="bk-app">
+
+    <div id="bk-header">
+      <div class="bk-logo">BK</div>
+
+      <div class="hinfo">
+        <span>Burger King</span>
+        <small>Asistente oficial</small>
+      </div>
+    </div>
+
+    <div id="bk-messages"></div>
+
+    <div id="bk-chips"></div>
+
+    <div id="bk-input-area">
+      <textarea id="bk-input" placeholder="Escribe tu pregunta aquí..."></textarea>
+      <button id="bk-send">Enviar</button>
+    </div>
+
+    <div id="bk-footer">
+      Puedes usar los botones o escribir libremente
+    </div>
+
+  </div>
+
+  <script>
+
+
+  const TOPICS=[
+    {label:"Misión",key:"mision"},
+    {label:"Visión",key:"vision"},
+    {label:"Valores",key:"valores"},
+    {label:"Fundadores",key:"fundadores"},
+    {label:"Más vendidos",key:"vendidos"}
+  ];
+
+  const CONTEXT={
+    mision:"La misión de Burger King es ofrecer a sus clientes la mejor hamburguesa a la parrilla al mejor precio, dentro de un ambiente limpio, confortable y con un servicio rápido y amigable.",
+    vision:"La visión de Burger King es ser la cadena de comida rápida más rentable del mundo, ofreciendo calidad, servicio y valor que supere las expectativas de sus clientes.",
+    valores:"Los valores de Burger King son: Calidad, Servicio, Diversidad e Inclusión y Responsabilidad Social.",
+    fundadores:"Burger King fue fundado en 1953 por Keith J. Kramer y Matthew Burns.",
+    vendidos:"Los artículos más vendidos son el Whopper, Whopper Jr., Chicken Sandwich, Onion Rings e Impossible Whopper."
+  };
+
+  const SYSTEM=`
+  Eres el asistente oficial de Burger King.
+
+  REGLAS:
+  1. Responde únicamente sobre misión, visión, valores, fundadores y productos más vendidos.
+  2. Usa SOLO la información proporcionada.
+  3. Sé amable y natural.
+  4. Máximo 3 oraciones.
+  5. Si preguntan algo fuera de esos temas, indica que solo puedes hablar sobre Burger King.
+  `;
+
+  const msgs=document.getElementById("bk-messages");
+  const chips=document.getElementById("bk-chips");
+  const input=document.getElementById("bk-input");
+  const sendBtn=document.getElementById("bk-send");
+
+  let history=[];
+
+  function addMsg(html,type){
+    const wrap=document.createElement("div");
+    wrap.className="msg "+type;
+
+    if(type==="bot"){
+      const av=document.createElement("div");
+      av.className="av";
+      av.textContent="BK";
+      wrap.appendChild(av);
+    }
+
+    const b=document.createElement("div");
+    b.className="bubble";
+    b.innerHTML=html;
+
+    wrap.appendChild(b);
+    msgs.appendChild(wrap);
+
+    msgs.scrollTop=msgs.scrollHeight;
+  }
+
+  function showTyping(){
+    const wrap=document.createElement("div");
+    wrap.className="msg bot";
+    wrap.id="typing-wrap";
+
+    const av=document.createElement("div");
+    av.className="av";
+    av.textContent="BK";
+
+    const b=document.createElement("div");
+    b.className="bubble typing";
+    b.innerHTML="<span></span><span></span><span></span>";
+
+    wrap.appendChild(av);
+    wrap.appendChild(b);
+
+    msgs.appendChild(wrap);
+    msgs.scrollTop=msgs.scrollHeight;
+  }
+
+  function removeTyping(){
+    const t=document.getElementById("typing-wrap");
+    if(t)t.remove();
+  }
+
+  function renderChips(disabled=false){
+    chips.innerHTML="";
+
+    TOPICS.forEach(t=>{
+      const btn=document.createElement("button");
+
+      btn.className="chip";
+      btn.textContent=t.label;
+      btn.disabled=disabled;
+
+      btn.onclick=()=>{
+        sendQuestion(`Quiero saber sobre ${t.label}.`);
+      };
+
+      chips.appendChild(btn);
+    });
+  }
+
+  async function sendQuestion(text){
+
+    if(!text.trim()) return;
+
+    addMsg(text,"user");
+
+    history.push({
+      role:"user",
+      content:text
+    });
+
+    renderChips(true);
+    showTyping();
+
+    try {
+
+      const res = await fetch("https://alluring-renewal-production-ad10.up.railway.app/chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+        message: text,
+        history: history  // ← agregar esto
+        })
+      });
+
+      const data = await res.json();
+
+      removeTyping();
+
+      if(data.reply){
+
+        history.push({
+          role:"assistant",
+          content:data.reply
+        });
+
+        addMsg(data.reply.replace(/\n/g,"<br>"), "bot");
+
+      } else {
+        addMsg("No pude obtener respuesta.", "bot");
+      }
+
+    } catch(e) {
+
+      removeTyping();
+      addMsg("Error de conexión con el servidor.", "bot");
+
+    }
+
+    renderChips(false);
+  }
+  sendBtn.onclick=()=>{
+    sendQuestion(input.value);
+    input.value="";
+  };
+
+  input.addEventListener("keydown",e=>{
+
+    if(e.key==="Enter" && !e.shiftKey){
+
+      e.preventDefault();
+      sendBtn.click();
+
+    }
+
+  });
+
+  addMsg(
+    "¡Hola! Soy el asistente oficial de <strong>Burger King</strong>.<br>¿Qué deseas conocer?",
+    "bot"
+  );
+
+  renderChips();
+  </script>
+
+  </body>
+  </html>
